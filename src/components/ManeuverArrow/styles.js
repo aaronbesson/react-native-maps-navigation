@@ -1,7 +1,7 @@
 /**
  * @imports
  */
-import { StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import { IconFont } from '../../constants/NavigationIcons';
 
 

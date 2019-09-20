@@ -1,7 +1,7 @@
 /**
  * @imports
  */
-import * as GeoLib from 'geolib';
+import GeoLib from 'geolib';
 
 /**
  * @class
@@ -13,10 +13,9 @@ export default class Simulator {
      * @param apiKey
      * @param options
      */
-    constructor(instance)
-    {
+    constructor(instance) {
         this.instance = instance;
-        this.speed = 30;
+        this.speed = 10;
         this.turnSpeed = 700;
     }
 
@@ -39,23 +38,23 @@ export default class Simulator {
 
             const nextPoint = points[index + 1];
 
-            if(nextPoint && !nextPoint.final == true) {
+            if (nextPoint && !nextPoint.final == true) {
 
                 // calculate distance between each point
                 const distance = Math.round(GeoLib.getDistance(point, nextPoint));
-                const bearing =  GeoLib.getGreatCircleBearing(point, nextPoint);
+                const bearing = GeoLib.getBearing(point, nextPoint);
 
-                if(bearing !== 0) {
+                if (bearing !== 0) {
 
                     if (distance > 1) {
 
                         for (var x = 1; x < distance; x++) {
 
-                            result.push(Object.assign({}, {bearing}, GeoLib.computeDestinationPoint(point, x, bearing)));
+                            result.push(Object.assign({}, { bearing }, GeoLib.computeDestinationPoint(point, x, bearing)));
                         }
 
                     } else {
-                        result.push(Object.assign({}, {bearing}, point));
+                        result.push(Object.assign({}, { bearing }, point));
                     }
                 }
             }
@@ -64,26 +63,18 @@ export default class Simulator {
         this.pointIndex = 0;
         this.points = result;
         this.lastBearing = false;
+        //this.drive();
 
-        this.drive();
-
-    }
-
-    drive()
-    {
         const point = this.points[this.pointIndex];
-
-        let speed = this.speed;
-
-        if(point && point.bearing) {
+        if (point && point.bearing) {
 
             let allowPositionUpdate = true;
 
 
-            if(this.lastBearing != point.bearing) {
+            if (this.lastBearing != point.bearing) {
 
                 // check if it's just a small bump
-                if(point.bearing > this.lastBearing - 10 && point.bearing  < this.lastBearing + 10) {
+                if (point.bearing > this.lastBearing - 10 && point.bearing < this.lastBearing + 10) {
 
                     this.instance.updateBearing(point.bearing, this.turnSpeed);
 
@@ -96,7 +87,45 @@ export default class Simulator {
                 this.lastBearing = point.bearing;
             }
 
-            if(allowPositionUpdate) {
+            if (allowPositionUpdate) {
+
+                this.instance.setPosition({
+                    ...point,
+                    heading: point.bearing,
+                });
+
+                this.pointIndex++;
+            }
+        }
+    }
+
+    drive() {
+        const point = this.points[this.pointIndex];
+
+        //let speed = this.speed;
+
+        if (point && point.bearing) {
+
+            let allowPositionUpdate = true;
+
+
+            if (this.lastBearing != point.bearing) {
+
+                // check if it's just a small bump
+                if (point.bearing > this.lastBearing - 10 && point.bearing < this.lastBearing + 10) {
+
+                    this.instance.updateBearing(point.bearing, this.turnSpeed);
+
+                } else {
+                    allowPositionUpdate = false;
+                    speed = this.turnSpeed;
+                    this.instance.updateBearing(point.bearing, this.turnSpeed);
+                }
+
+                this.lastBearing = point.bearing;
+            }
+
+            if (allowPositionUpdate) {
 
                 this.instance.setPosition({
                     ...point,

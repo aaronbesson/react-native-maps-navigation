@@ -1,7 +1,7 @@
 /**
  * @imports
  */
-import { StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import { IconFont } from '../../constants/NavigationIcons';
 
 
@@ -14,7 +14,8 @@ export default props => StyleSheet.create({
      * @maneuverLabel
      */
     maneuverLabel: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginLeft: 10
     },
 
     /**

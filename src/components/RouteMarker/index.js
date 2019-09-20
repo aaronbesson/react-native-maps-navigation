@@ -36,7 +36,7 @@ export default class RouterMarker extends Component {
             <Marker
                 coordinate={this.props.coordinate}
             >
-                <Text style={styles.markerText}>{this.theme.icon}</Text>
+
             </Marker>
         )
     }
