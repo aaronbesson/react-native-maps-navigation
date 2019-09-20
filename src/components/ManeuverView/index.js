@@ -40,7 +40,7 @@ export default class ManeuverView extends Component {
         fontFamily: undefined,
         fontFamilyBold: undefined,
         fontSize: 20,
-        arrowSize: 36,
+        arrowSize: 50,
         arrowColor: '#545455',
         withCloseButton: false,
         onClose: undefined,
@@ -52,7 +52,8 @@ export default class ManeuverView extends Component {
      * @constructor
      * @param props
      */
-    constructor(props) {
+    constructor(props)
+    {
         super(props);
 
     }
@@ -62,12 +63,13 @@ export default class ManeuverView extends Component {
      * render
      * @returns {XML}
      */
-    render() {
+    render()
+    {
         const styles = Styles(this.props);
 
         const step = this.props.step;
 
-        if (!step) return null;
+        if(!step) return null;
 
         const maneuver = step.maneuver;
 
@@ -85,7 +87,6 @@ export default class ManeuverView extends Component {
                         {...this.props}
                         instructions={step.instructions}
                         fontSize={this.props.fontSize}
-                        color={this.props.fontColor}
                     />
                 </View>
                 {!this.props.withCloseButton ? null : (

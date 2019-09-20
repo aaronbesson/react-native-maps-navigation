@@ -1,7 +1,7 @@
 /**
  * @imports
  */
-import { StyleSheet } from 'react-native';
+import { StyleSheet} from 'react-native';
 import { IconFont } from '../../constants/NavigationIcons';
 
 
@@ -14,8 +14,7 @@ export default props => StyleSheet.create({
      * @maneuverLabel
      */
     maneuverLabel: {
-        flexDirection: 'row',
-        marginLeft: 10
+        flexDirection: 'row'
     },
 
     /**
@@ -27,14 +26,12 @@ export default props => StyleSheet.create({
         fontFamily: props.fontFamilyBold || props.fontFamily,
         fontSize: props.fontSize,
         flexWrap: 'wrap',
-        color: props.color
     },
 
     regular: {
         fontFamily: props.fontFamily,
         fontSize: props.fontSize,
         flexWrap: 'wrap',
-        color: props.color
     },
 
     extra: {

@@ -21,7 +21,6 @@ export default class ManeuverLabel extends Component {
         fontFamily: PropTypes.string,
         fontFamilyBold: PropTypes.string,
         fontSize: PropTypes.number,
-        fontColor: PropTypes.string
     }
 
     /**
@@ -33,14 +32,14 @@ export default class ManeuverLabel extends Component {
         fontFamily: undefined,
         fontFamilyBold: undefined,
         fontSize: 15,
-        fontColor: undefined
     }
 
     /**
      * @constructor
      * @param props
      */
-    constructor(props) {
+    constructor(props)
+    {
         super(props);
     }
 
@@ -49,7 +48,8 @@ export default class ManeuverLabel extends Component {
      * @param styles
      * @returns {*}
      */
-    getParsedInstructions(styles) {
+    getParsedInstructions(styles)
+    {
         const parts = [];
 
         const regex = /(\w+)|<(.*?)>(.*?)<\/.*?>/g;
@@ -63,27 +63,27 @@ export default class ManeuverLabel extends Component {
 
         let m;
         let last = false;
-        while ((m = regex.exec(this.props.instructions))) {
+        while((m = regex.exec(this.props.instructions))) {
 
             if (m.index === regex.lastIndex) {
                 regex.lastIndex++;
                 last = true;
             }
 
-            if (m[2]) {
+            if(m[2]) {
                 let tag = m[2].split(" ")[0];
 
-                if (tag == "div") m[3] = '\n' + m[3];
+                if(tag == "div") m[3] = '\n' + m[3];
 
                 parts.push(<Text key={m.index} style={mapping[tag]}>{m[3]}{last ? '.' : ' '}</Text>);
 
             } else {
-                parts.push(<Text key={m.index} style={mapping.r}>{m[0]}{last ? '.' : ' '}</Text>);
+                parts.push(<Text key={m.index} style={mapping.r}>{m[0]}{last ? '.': ' '}</Text>);
             }
         }
 
         return (
-            <Text style={{ flexWrap: 'wrap', color: 'blue' }}>
+            <Text style={{flexWrap: 'wrap'}}>
                 {parts}
             </Text>
         )
@@ -93,7 +93,8 @@ export default class ManeuverLabel extends Component {
      * render
      * @returns {XML}
      */
-    render() {
+    render()
+    {
         const styles = Styles(this.props);
 
         return (

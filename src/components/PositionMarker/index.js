@@ -52,7 +52,8 @@ export default class PositionMarker extends Component {
      * constructor
      * @param props
      */
-    constructor(props) {
+    constructor(props)
+    {
         super(props);
     }
 
@@ -61,8 +62,9 @@ export default class PositionMarker extends Component {
      * @render
      * @returns {*}
      */
-    render() {
-        if (!this.props.coordinate) return null;
+    render()
+    {
+        if(!this.props.coordinate) return null;
 
         const type = this.props.type;
 
@@ -78,7 +80,8 @@ export default class PositionMarker extends Component {
      * @param styles
      * @returns {*}
      */
-    renderArrow(styles) {
+    renderArrow(styles)
+    {
         return (
             <Marker
                 coordinate={this.props.coordinate}
@@ -87,7 +90,6 @@ export default class PositionMarker extends Component {
                 <View style={styles.positionMarkerArrow}>
                     <Text style={styles.positionMarkerText}>{this.theme.icon}</Text>
                 </View>
-
             </Marker>
         )
     }

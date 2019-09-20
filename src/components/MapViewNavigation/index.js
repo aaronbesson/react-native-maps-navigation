@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { CoordinatePropType } from '../../constants/PropTypes';
+import {CoordinatePropType} from '../../constants/PropTypes';
 import { View, TouchableOpacity, Text, Dimensions, Geolocation } from 'react-native';
 import connectTheme from '../../themes';
 import Geocoder from '../../modules/Geocoder';
@@ -16,8 +16,8 @@ import Traps from '../../modules/Traps';
 import RouteMarker from '../RouteMarker';
 import RoutePolyline from '../RoutePolyline';
 import PositionMarker from '../PositionMarker';
-import { POSITION_ARROW } from "../../constants/MarkerTypes";
-import { Circle, Polygon, Polyline } from 'react-native-maps';
+import {POSITION_ARROW} from "../../constants/MarkerTypes";
+import {Circle, Polygon, Polyline} from 'react-native-maps';
 
 
 /**
@@ -53,8 +53,6 @@ export default class MapViewNavigation extends Component {
         routeStepCenterTolerance: PropTypes.number,
         routeStepCourseTolerance: PropTypes.number,
         displayDebugMarkers: PropTypes.bool,
-        simulate: PropTypes.bool,
-        options: PropTypes.object
     }
 
     /**
@@ -84,8 +82,6 @@ export default class MapViewNavigation extends Component {
         routeStepCenterTolerance: 0.1,
         routeStepCourseTolerance: 30, // in degress
         displayDebugMarkers: false,
-        simulate: false,
-        options: {}
     }
 
     /**
@@ -103,7 +99,7 @@ export default class MapViewNavigation extends Component {
             language: this.props.language
         });
 
-
+        this.simulator = new Simulator(this);
 
         this.traps = new Traps(this);
 
@@ -118,7 +114,7 @@ export default class MapViewNavigation extends Component {
 
         this.theme = connectTheme(this.props.theme);
 
-        const { width, height } = Dimensions.get('window');
+        const {width, height} = Dimensions.get('window');
 
         this.aspectRatio = width / height;
     }
@@ -126,7 +122,8 @@ export default class MapViewNavigation extends Component {
     /**
      * @componentDidMount
      */
-    componentDidMount() {
+    componentDidMount()
+    {
         this.watchId = navigator.geolocation.watchPosition(position => {
 
             this.setPosition(position.coords);
@@ -137,7 +134,8 @@ export default class MapViewNavigation extends Component {
     /**
      * @componentWillUnmount
      */
-    componentWillUnmount() {
+    componentWillUnmount()
+    {
         navigator.geolocation.clearWatch(this.watchId);
     }
 
@@ -146,10 +144,11 @@ export default class MapViewNavigation extends Component {
      * @param prevProps
      * @param prevState
      */
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.origin && this.props.destination) {
+    componentDidUpdate(prevProps, prevState)
+    {
+        if(this.props.origin && this.props.destination) {
 
-            if (
+            if(
                 (prevProps.navigationMode != this.props.navigationMode) ||
                 (prevProps.travelMode != this.props.travelMode) ||
                 (prevProps.origin != this.props.origin || prevProps.destination != this.props.destination)
@@ -182,8 +181,8 @@ export default class MapViewNavigation extends Component {
         const value = 0.00001 * (this.props.maxZoom - (level < this.props.minZoom ? this.props.minZoom : level));
 
         return {
-            latitudeDelta: 0.004,
-            longitudeDelta: 0.0004
+            latitudeDelta: value,
+            longitudeDelta: value * this.aspectRatio
         }
     }
 
@@ -195,7 +194,7 @@ export default class MapViewNavigation extends Component {
      */
     getBoundingBoxZoomValue(b, quantifier = 1) {
 
-        if (b.length != 2) return {};
+        if(b.length != 2) return {};
 
         const latitudeDelta = (b[0].latitude > b[1].latitude ? b[0].latitude - b[1].latitude : b[1].latitude - b[0].latitude) * quantifier;
 
@@ -210,7 +209,8 @@ export default class MapViewNavigation extends Component {
      * @param coordinate
      * @param duration
      */
-    updatePosition(coordinate, duration = 0) {
+    updatePosition(coordinate, duration = 0)
+    {
         this.props.map().animateToCoordinate(coordinate, duration);
     }
 
@@ -219,7 +219,8 @@ export default class MapViewNavigation extends Component {
      * @param bearing
      * @param duration
      */
-    updateBearing(bearing, duration = false) {
+    updateBearing(bearing, duration = false)
+    {
         this.props.map().animateToBearing(bearing, duration || this.props.animationDuration);
     }
 
@@ -227,7 +228,8 @@ export default class MapViewNavigation extends Component {
      *
      * @param stepIndex
      */
-    updateStep(stepIndex = 0) {
+    updateStep(stepIndex = 0)
+    {
         const step = this.state.route.steps[stepIndex < 0 ? 0 : stepIndex];
 
         const nextStep = this.state.route.steps[stepIndex + 1];
@@ -241,7 +243,7 @@ export default class MapViewNavigation extends Component {
             courseTolerance: this.props.routeStepCourseTolerance,
         }, (trap, event, state) => {
 
-            if (!nextStep && trap.isCenter()) {
+            if(!nextStep && trap.isCenter()) {
 
                 this.props.onNavigationCompleted && this.props.onNavigationCompleted();
 
@@ -251,7 +253,7 @@ export default class MapViewNavigation extends Component {
                 });
             }
 
-            if (trap.isLeaving()) {
+            if(trap.isLeaving()) {
                 this.updateStep(this.stepIndex);
             }
         });
@@ -263,31 +265,33 @@ export default class MapViewNavigation extends Component {
      * setPosition
      * @param position
      */
-    setPosition(position) {
-        const { latitude, longitude, heading } = position;
+    setPosition(position)
+    {
+        const {latitude, longitude, heading} = position;
 
-        position.coordinate = { latitude, longitude };
+        position.coordinate = {latitude, longitude};
 
         // process traps on setPosition
         this.traps.execute(position);
 
         // update position on map
-        if (this.state.navigationMode == NavigationModes.NAVIGATION) {
+        if(this.state.navigationMode == NavigationModes.NAVIGATION) {
 
             this.updatePosition(position);
 
             this.updateBearing(heading);
         }
 
-        this.setState({ position });
+        this.setState({position});
     }
 
     /**
      * clearRoute
      * @void
      */
-    clearRoute() {
-        this.setState({ route: false, step: false, stepIndex: false })
+    clearRoute()
+    {
+        this.setState({route: false, step: false, stepIndex: false})
     }
 
     /**
@@ -296,20 +300,21 @@ export default class MapViewNavigation extends Component {
      * @param destination
      * @param navigationMode
      */
-    updateRoute(origin = false, destination = false, navigationMode = false, options = null) {
+    updateRoute(origin = false, destination = false, navigationMode = false)
+    {
         origin = origin || this.props.origin;
         destination = destination || this.props.destination;
         navigationMode = navigationMode || this.props.navigationMode;
-        options = options || this.props.options
 
-        switch (navigationMode) {
+        switch(navigationMode) {
 
             case NavigationModes.ROUTE:
-                this.displayRoute(origin, destination, options);
+                console.log('*** ROUTE', origin, destination);
+                this.displayRoute(origin, destination);
                 break;
 
             case NavigationModes.NAVIGATION:
-                this.navigateRoute(origin, destination, options);
+                this.navigateRoute(origin, destination);
                 break;
         }
     }
@@ -322,15 +327,17 @@ export default class MapViewNavigation extends Component {
      * @param options
      * @returns {PromiseLike<T> | Promise<T>}
      */
-    prepareRoute(origin, destination, options = false, testForRoute = false) {
-        if (testForRoute && this.state.route) {
+    prepareRoute(origin, destination, options = false, testForRoute = false)
+    {
+        if(testForRoute && this.state.route) {
             return Promise.resolve(this.state.route);
         }
-        options = Object.assign({}, { mode: this.state.travelMode }, { mode: this.props.travelMode }, options.constructor == Object ? options : {});
+
+        options = Object.assign({}, {mode: this.state.travelMode}, {mode: this.props.travelMode}, options.constructor == Object ? options : {});
 
         return this.directionsCoder.fetch(origin, destination, options).then(routes => {
 
-            if (routes.length) {
+            if(routes.length) {
 
                 const route = routes[0];
 
@@ -338,7 +345,7 @@ export default class MapViewNavigation extends Component {
 
                 this.props.onStepChange && this.props.onStepChange(false);
 
-                this.setState({ route, step: false });
+                this.setState({route, step: false});
 
                 return Promise.resolve(route);
             }
@@ -355,7 +362,8 @@ export default class MapViewNavigation extends Component {
      * @param options
      * @returns {PromiseLike<T> | Promise<T>}
      */
-    displayRoute(origin, destination, options = false) {
+    displayRoute(origin, destination, options = false)
+    {
         return this.prepareRoute(origin, destination, options).then(route => {
 
             const region = {
@@ -365,14 +373,14 @@ export default class MapViewNavigation extends Component {
 
             this.props.map().animateToRegion(region, this.props.animationDuration);
 
-            if (!this.state.navigationMode == NavigationModes.ROUTE) {
+            if(!this.state.navigationMode == NavigationModes.ROUTE) {
                 this.setState({
                     navigationMode: NavigationModes.ROUTE,
                 });
             }
 
             return Promise.resolve(route);
-        }).catch((err) => console.log(err));
+        });
     }
 
     /**
@@ -382,7 +390,8 @@ export default class MapViewNavigation extends Component {
      * @param options
      * @returns {PromiseLike<T> | Promise<T>}
      */
-    navigateRoute(origin, destination, options = false) {
+    navigateRoute(origin, destination, options = false)
+    {
         return this.prepareRoute(origin, destination, options, true).then(route => {
 
             const region = {
@@ -404,13 +413,7 @@ export default class MapViewNavigation extends Component {
 
             this.props.onNavigationStarted && this.props.onNavigationStarted();
 
-            if (this.props.simulate) {
-                console.log("SIMULATING ROUTE")
-                this.simulator = new Simulator(this);
-                setTimeout(() => this.simulator.start(route), this.props.animationDuration * 1.5);
-            } else {
-                console.log("NOT SIMULATING")
-            }
+            setTimeout(() => this.simulator.start(route), this.props.animationDuration * 1.5);
 
             return Promise.resolve(route);
         });
@@ -421,7 +424,8 @@ export default class MapViewNavigation extends Component {
      * @param route
      * @returns {*}
      */
-    getRouteMarkers(route) {
+    getRouteMarkers(route)
+    {
         if (!route || route.markers.constructor !== Array) return null;
 
         return route.markers.map((params, index) => {
@@ -442,7 +446,8 @@ export default class MapViewNavigation extends Component {
      * @param navigationMode
      * @returns {*}
      */
-    getPositionMarker(position, navigationMode) {
+    getPositionMarker(position, navigationMode)
+    {
         const type = navigationMode == NavigationModes.NAVIGATION ? POSITION_ARROW : undefined;
 
         return (
@@ -460,7 +465,8 @@ export default class MapViewNavigation extends Component {
      * @param route
      * @returns {*}
      */
-    getRoutePolylines(route) {
+    getRoutePolylines(route)
+    {
         if (!route || route.polylines.constructor !== Array) return null;
 
         return route.polylines.map((params, index) => {
@@ -480,10 +486,11 @@ export default class MapViewNavigation extends Component {
      * @param route
      * @returns {Array}
      */
-    getDebugShapes(route) {
+    getDebugShapes(route)
+    {
         let result = [];
 
-        if (!route || !this.props.displayDebugMarkers) return result;
+        if(!route || !this.props.displayDebugMarkers) return result;
 
 
         const steps = this.state.route.steps;
@@ -495,16 +502,16 @@ export default class MapViewNavigation extends Component {
             const coordinate = step.start;
 
             [
-                { radius: this.props.routeStepDistance, color: 'blue' },
-                { radius: this.props.routeStepDistance * this.props.routeStepInnerTolerance, color: 'red' },
-                { radius: this.props.routeStepDistance * this.props.routeStepCenterTolerance, color: 'green' }
+                {radius: this.props.routeStepDistance, color: 'blue'},
+                {radius: this.props.routeStepDistance * this.props.routeStepInnerTolerance, color: 'red'},
+                {radius: this.props.routeStepDistance * this.props.routeStepCenterTolerance, color: 'green'}
             ].forEach(d => {
-                result.push(<Circle key={c} strokeColor={d.color} strokeWidth={2} center={step.start} radius={d.radius} />);
+                result.push(<Circle key={c} strokeColor={d.color} strokeWidth={2} center={step.start} radius={d.radius}/>);
                 c++;
             });
 
             [
-                { radius: this.props.routeStepDistance, color: 'blue' }
+                {radius: this.props.routeStepDistance, color: 'blue'}
             ].forEach(d => {
 
                 let bearing = step.bearing; // - 180 > 0 ? step.bearing - 180 : 360 - step.bearing - 180;
@@ -534,7 +541,8 @@ export default class MapViewNavigation extends Component {
      * @render
      * @returns {*[]}
      */
-    render() {
+    render()
+    {
         const result = [
             this.getRouteMarkers(this.state.route),
             this.getRoutePolylines(this.state.route),
@@ -545,3 +553,4 @@ export default class MapViewNavigation extends Component {
         return result;
     }
 }
+
